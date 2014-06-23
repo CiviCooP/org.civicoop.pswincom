@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<extension key="org.civicoop.pswincom" type="module">
+  <file>pswincom</file>
+  <name>PSWinCom SMS Gateway</name>
+  <description>Sending and receiving sms through PSWinCom</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Jaap Jansma</author>
+    <email>helpdesk@civicoop.org</email>
+  </maintainer>
+  <releaseDate>2014-06-23</releaseDate>
+  <version>1.0</version>
+  <develStage>alpha</develStage>
+  <compatibility>
+    <ver>4.2</ver>
+  </compatibility>
+  <comments>This is a new, undeveloped module</comments>
+  <civix>
+    <namespace>CRM/Pswincom</namespace>
+  </civix>
+</extension>
