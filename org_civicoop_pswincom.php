@@ -180,7 +180,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xmlRequest = new SimpleXMLElement(trim($content));
     $log_xml = var_export($xmlRequest, true);
     CRM_Core_Error::debug_log_message($log_xml);
-    foreach($xmlRequest->MSGLST->children() as $msg) {
+    foreach($xmlRequest->children('MSG') as $msg) {
       $from = (string) $msg->SND;
       $body = (string) $msg->TEXT;
       $to = (string) $msg->RCV;
