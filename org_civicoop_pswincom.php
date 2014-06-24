@@ -181,7 +181,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     foreach($xmlRequest->children() as $msg) {
       $from = (string) $msg->SND;
       //remove norwegian country code
-      if (stripos('47')===0) {
+      if (stripos('47', $from)===0) {
         $from = substr($from, 2);
       }
       
