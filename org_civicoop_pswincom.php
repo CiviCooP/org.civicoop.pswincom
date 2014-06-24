@@ -89,6 +89,19 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       
       $receivers = explode(",", $header['to']);
       $sendTo = array();
+      
+      //determine messsage chariging
+      $charge = false;
+      $charges = array();
+      if (array_key_exists('charge', $this->_providerInfo['api_params'])) {
+        $charge = $this->_providerInfo['api_params']['charge'];
+      }
+      
+      $financial_type_id = false;
+      if (array_key_exists('financial_type_id', $this->_providerInfo['api_params'])) {
+        $financial_type_id = $this->_providerInfo['api_params']['financial_type_id'];
+      }
+      
       $id = 0;
       foreach($receivers as $receiver) {
         $id ++;
@@ -103,6 +116,20 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         if (array_key_exists('from', $this->_providerInfo['api_params'])) {
           $xml[] = "<SND>".$this->_providerInfo['api_params']['from']."</SND>";
         }
+        
+        if ($charge !== false && $financial_type_id !== false) {
+          $tariff = $charge * 100;
+          $xml[] = "<TARIFF>".$tariff."</TARIFF>";
+          
+          //create pending contribution
+          $contributionParams['contact_id'] = $cid;
+          $contributionParams['total_amount'] = $charge;
+          $contributionParams['financial_type_id'] = $financial_type_id;
+          $contributionParams['contribution_status_id'] = 2; //pending
+          $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
+          $charges[$id] = $contribution['id'];
+        }
+        
         $xml[] = "</MSG>";
       }
       
@@ -149,7 +176,14 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $receiver = $sendTo[(string) $msg->ID];
           list($cid, $phone)  = explode("::", $receiver);
           $to = CRM_Contact_BAO_Contact::displayName($cid) . ' &lt;'.$phone.'&gt;';
-          $session->setStatus(ts("Failed to send message to '%1' because '%2'", $to, (string) $msg->INFO));
+          $session->setStatus(ts("Failed to send message to '%1' because '%2'", array( 1 => $to, 2 => (string) $msg->INFO)));
+          
+          //remove the contribution from the system
+          if (isset($charges[(string) $msg->ID])) {
+            $updateContrib['id'] = $charges[(string) $msg->ID];
+            $updateContrib['contribution_status_id'] = 3; //cancled
+            civicrm_api3('Contribution', 'create', $updateContrib);
+          }
         }
       }
       return true;
