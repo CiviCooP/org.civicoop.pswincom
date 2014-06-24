@@ -173,7 +173,10 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "<!DOCTYPE MSGLST SYSTEM \"pswincom_receive_response.dtd\">";
     $xml[] = "<MSGLST>";
     
-    $content = @file_get_contents('php://input', 'r');
+    $content = file_get_contents('php://input', 'r');
+    
+    CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content);
+    
     $xmlRequest = new SimpleXMLElement(trim($content));
     foreach($xmlRequest->MSGLST->children() as $msg) {
       $from = (string) $msg->SND;
@@ -191,6 +194,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "</MSGLST>";
     $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
     echo $xmldocument;
+    
     CRM_Utils_System::civiExit();
     
   }
