@@ -10,7 +10,7 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
     $params = array(
       'option_group_id' => $groupID,
       'label' => 'PSWinCom',
-      'value' => 'CRM_Pswincom_SMSProvider',
+      'value' => 'org.civicoop.pswincom',
       'name' => 'PSWinCom',
       'is_default' => 1,
       'is_active' => 1,
@@ -24,7 +24,7 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
     if ($optionID) {
       CRM_Core_BAO_OptionValue::del($optionID);
     }
-    $filter = array('name' => 'CRM_Pswincom_SMSPRovider');
+    $filter = array('name' => 'org.civicoop.pswincom');
     $Providers = CRM_SMS_BAO_Provider::getProviders(False, $filter, False);
     if ($Providers) {
       foreach ($Providers as $key => $value) {
@@ -38,7 +38,7 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
     if ($optionID) {
       CRM_Core_BAO_OptionValue::setIsActive($optionID, TRUE);
     }
-    $filter = array('name' => 'CRM_Pswincom_SMSPRovider');
+    $filter = array('name' => 'org.civicoop.pswincom');
     $Providers = CRM_SMS_BAO_Provider::getProviders(False, $filter, False);
     if ($Providers) {
       foreach ($Providers as $key => $value) {
@@ -53,7 +53,7 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
       CRM_Core_BAO_OptionValue::setIsActive($optionID, FALSE);
     }
 
-    $filter = array('name' => 'CRM_Pswincom_SMSProvider');
+    $filter = array('name' => 'org.civicoop.pswincom');
     $Providers = CRM_SMS_BAO_Provider::getProviders(False, $filter, False);
     if ($Providers) {
       foreach ($Providers as $key => $value) {
