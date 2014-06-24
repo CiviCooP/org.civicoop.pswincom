@@ -142,7 +142,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         return false;
       }
       
-      $xmlResponse = new SimpleXMLElement(trim($response));
+      $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
       foreach($xmlResponse->MSGLST->children() as $msg) {
         if ( (string) $msg->STATUS != 'OK') {
           //error for contact
@@ -173,7 +173,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "<!DOCTYPE MSGLST SYSTEM \"pswincom_receive_response.dtd\">";
     $xml[] = "<MSGLST>";
     
-    $content = utf8_encode(file_get_contents('php://input', 'r'));
+    $content = $this->convertXMLToUtf8(file_get_contents('php://input', 'r'));
     
     CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content);
     
@@ -185,7 +185,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $from = substr($from, 2);
       }
       
-      $body = utf8_encode((string) $msg->TEXT);
+      $body = (string) $msg->TEXT;
       $to = (string) $msg->RCV;
     
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
@@ -203,5 +203,12 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     
     CRM_Utils_System::civiExit();
     
+  }
+  
+  function convertXMLToUtf8($xml) {
+    $dom = new DOMDocument();
+    $dom->loadXML($xml);
+    $dom->encoding = 'utf-8';
+    return $dom->saveXML();
   }
 }
