@@ -182,7 +182,8 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $from = (string) $msg->SND;
       $body = (string) $msg->TEXT;
       $to = (string) $msg->RCV;
-      
+    
+      CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
       parent::processInbound($from, $body, $to);
       
       $xml[] = "<MSG>";
