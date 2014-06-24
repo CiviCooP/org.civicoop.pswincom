@@ -173,15 +173,18 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "<!DOCTYPE MSGLST SYSTEM \"pswincom_receive_response.dtd\">";
     $xml[] = "<MSGLST>";
     
-    $content = file_get_contents('php://input', 'r');
+    $content = utf8_encode(file_get_contents('php://input', 'r'));
     
     CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content);
     
-    $xmlRequest = new SimpleXMLElement(trim($content));
-    $log_xml = var_export($xmlRequest, true);
-    CRM_Core_Error::debug_log_message($log_xml);
+    $xmlRequest = new SimpleXMLElement(trim($content));   
     foreach($xmlRequest->children() as $msg) {
       $from = (string) $msg->SND;
+      //remove norwegian country code
+      if (stripos('47')===0) {
+        $from = substr($from, 2);
+      }
+      
       $body = (string) $msg->TEXT;
       $to = (string) $msg->RCV;
     
