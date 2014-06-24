@@ -16,7 +16,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    * 
    * @var String
    */
-  protected $_apiURL = "https://secure.pswin.com/XMLHttpWrapper/process.aspx";
+  public $_apiURL = "https://secure.pswin.com/XMLHttpWrapper/process.aspx";
   
   /**
    * The default type for the API 
