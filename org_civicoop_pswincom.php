@@ -173,7 +173,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "<!DOCTYPE MSGLST SYSTEM \"pswincom_receive_response.dtd\">";
     $xml[] = "<MSGLST>";
     
-    $content = utf8_encode(file_get_contents('php://input', 'r'));
+    $content = file_get_contents('php://input', 'r');
     
     CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content);
     
@@ -185,7 +185,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $from = substr($from, 2);
       }
       
-      $body = (string) $msg->TEXT;
+      $body = utf8_encode((string) $msg->TEXT);
       $to = (string) $msg->RCV;
     
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
