@@ -191,7 +191,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $xml[] = "</MSGLST>";
     $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
     echo $xmldocument;
-    
+    CRM_Utils_System::civiExit();
     
   }
 }
