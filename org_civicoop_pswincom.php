@@ -167,4 +167,31 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     //assume contact lifes in norway
     return "+47".$phone;//norwegian phone number;
   }
+  
+  function inbound() {
+    $xml[] = "<?xml version=\"1.0\"?>";
+    $xml[] = "<!DOCTYPE MSGLST SYSTEM \"pswincom_receive_response.dtd\">";
+    $xml[] = "<MSGLST>";
+    
+    $content = @file_get_contents('php://input', 'r');
+    $xmlRequest = new SimpleXMLElement(trim($content));
+    foreach($xmlRequest->MSGLST->children() as $msg) {
+      $from = (string) $msg->SND;
+      $body = (string) $msg->TEXT;
+      $to = (string) $msg->RCV;
+      
+      parent::processInbound($from, $body, $to);
+      
+      $xml[] = "<MSG>";
+      $xml[] = "<ID>".(string) $msg->ID . "</ID>";
+      $xml[] = "<STATUS>OK</STATUS>";
+      $xml[] = "</MSG>";
+    }
+    
+    $xml[] = "</MSGLST>";
+    $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
+    echo $xmldocument;
+    
+    
+  }
 }
