@@ -77,6 +77,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    */
   function send($recipients, $header, $message, $dncID = NULL) { 
     
+    CRM_Core_Error::debug_log_message(var_export($header, true));
     CRM_Core_Error::debug_log_message("Send SMS with pswin");
     
     $session = CRM_Core_Session::singleton();    
@@ -133,7 +134,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $contributionParams['total_amount'] = $charge;
           $contributionParams['financial_type_id'] = $financial_type_id;
           $contributionParams['contribution_status_id'] = 2; //pending
-          $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
+          //$contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
           $charges[$id] = $contribution['id'];
         }
         
