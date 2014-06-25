@@ -93,12 +93,16 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       //determine messsage chariging
       $charge = false;
       $charges = array();
-      if (array_key_exists('charge', $this->_providerInfo['api_params'])) {
+      if (array_key_exists('charge', $header)) {
+        $charge = $header['charge'];
+      } elseif (array_key_exists('charge', $this->_providerInfo['api_params'])) {
         $charge = $this->_providerInfo['api_params']['charge'];
       }
       
       $financial_type_id = false;
-      if (array_key_exists('financial_type_id', $this->_providerInfo['api_params'])) {
+      if (array_key_exists('financial_type_id', $header)) {
+        $financial_type_id = $header['financial_type_id'];
+      } elseif (array_key_exists('financial_type_id', $this->_providerInfo['api_params'])) {
         $financial_type_id = $this->_providerInfo['api_params']['financial_type_id'];
       }
       
