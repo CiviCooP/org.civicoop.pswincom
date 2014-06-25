@@ -75,7 +75,10 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    *
    * @access public
    */
-  function send($recipients, $header, $message, $dncID = NULL) {    
+  function send($recipients, $header, $message, $dncID = NULL) { 
+    
+    CRM_Core_Error::debug_log_message("Send SMS with pswin");
+    
     $session = CRM_Core_Session::singleton();    
     if ($this->_apiType == 'xml') {
       // Writing XML Document
