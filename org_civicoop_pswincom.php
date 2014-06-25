@@ -142,6 +142,8 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $xml[] = "</SESSION>";
       $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
       
+      CRM_Core_Error::debug_log_message("Send SMS:\r\n\r\n".$xmldocument);
+      
       //open connection
       $ch = curl_init();
       
@@ -170,6 +172,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       
       if ($error !== false) {
         $session->setStatus(ts('Sending SMS Failed: %1', $error), '', 'error');
+        CRM_Core_Error::debug_log_message('Error with sending SMS: '.$error);
         return false;
       }
       
