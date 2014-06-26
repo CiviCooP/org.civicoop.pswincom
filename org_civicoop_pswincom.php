@@ -77,7 +77,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    */
   function send($recipients, $header, $message, $dncID = NULL) { 
     
-    CRM_Core_Error::debug_log_message(var_export($header, true));
+    CRM_Core_Error::debug_log_message(var_export($message, true));
     CRM_Core_Error::debug_log_message("Send SMS with pswin");
     
     $session = CRM_Core_Session::singleton();    
@@ -111,27 +111,18 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       }
       
       $id = 0;
-      CRM_Core_Error::debug_log_message(var_export($receivers, true));
       foreach($receivers as $receiver) {
         $id ++;
         $sendTo[$id] = $receiver;
         list($cid, $phone)  = explode("::", $receiver); //split x::yyyyyy where x = civi id and yyyyy is phone number
         if (empty($phone)) {
-          
-          CRM_Core_Error::debug_log_message("no phone....");
-          CRM_Core_Error::debug_log_message(var_export($cid, true));
-          CRM_Core_Error::debug_log_message(var_export($phone, true));
-          
-          $phone = $receiver;
+          $phone = $cid;
           //find cid belonging to this phone number
           $formatTo   = $this->formatPhone($this->stripPhone($phone), $like, "like"); 
           $escapedTo  = CRM_Utils_Type::escape($formatTo, 'String');
           $cid = CRM_Core_DAO::singleValueQuery('SELECT contact_id FROM civicrm_phone WHERE phone LIKE "' . $escapedTo . '"');
         }
         $intPhone = $this->includeCountryCode($phone, $cid);
-        CRM_Core_Error::debug_log_message(var_export($cid, true));
-        CRM_Core_Error::debug_log_message(var_export($phone, true));
-        CRM_Core_Error::debug_log_message(var_export($intPhone, true));
                
         $xml[] = "<MSG>";
         $xml[] = "<ID>".$id."</ID>";
