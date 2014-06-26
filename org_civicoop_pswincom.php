@@ -34,7 +34,8 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    */
   protected $_providerInfo = array();
   
-  protected $balans_konto_field_id = false;
+  protected $balans_konto_table_name = false;
+  protected $balans_konto_field_name = false;
   
     
 
@@ -51,11 +52,16 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $this->_providerInfo = $provider;
     
     try {
-      $nets_transaction_gid = civicrm_api3('CustomGroup', 'getvalue', array('return' => 'id', 'name' => 'nets_transactions'));
-      $balans_konto_field_id = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balansekonto', 'custom_group_id' => $nets_transaction_gid));
-      if ($balans_konto_field_id) {
-        $this->balans_konto_field_id = $balans_konto_field_id;
+      $nets_transaction = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'nets_transactions'));
+      $nets_transaction_gid = $nets_transaction['id'];
+      if (is_array($nets_transaction) && isset($nets_transaction['id']) && isset($nets_transaction['table_name'])) {
+        $balans_konto_field_name = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balansekonto', 'custom_group_id' => $nets_transaction_gid));
+        $this->balans_konto_table_name = $nets_transaction['table_name'];
+        if ($balans_konto_field_name) {
+          $this->balans_konto_field_name = $balans_konto_field_name;
+        }
       }
+      
     } catch (Exception $e) {
       //do nothing
     }
@@ -160,9 +166,6 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
             $contributionParams['contribution_payment_instrument_id'] = $paymentInstrument;
           }
           
-          if ($this->balans_konto_field_id) {
-            $contributionParams['custom_'.$this->balans_konto_field_id] = '1571'; //SMS
-          }
           CRM_Core_Error::debug_log_message(var_export($contributionParams, true));
           $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
           $charges[$id] = $contribution['id'];
@@ -175,6 +178,11 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
             'contact_id' => $cid,
           );
           civicrm_api3('Note', 'create', $noteParams);
+          
+          CRM_Core_DAO::executeQuery("INSERT INTO `".$this->balans_konto_table_name."` (`entity_id`, `".$this->balans_konto_field_name."`) VALUES (%1, %2);", array(
+            1 => array($contribution['id'], 'Positive'),
+            2 => array('1571', 'String') //1571 is sms payment
+          ));
         }
         
         $xml[] = "</MSG>";
