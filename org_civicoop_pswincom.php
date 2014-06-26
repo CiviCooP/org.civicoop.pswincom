@@ -156,14 +156,14 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $contributionParams['contribution_status_id'] = 1; //pending
           
           $paymentInstrument = CRM_Core_OptionGroup::getValue('payment_instrument', 'SMS');
-          if ($patmentInstrument) {
-            $contributionParams['contribution_payment_instrument_id'] = $patmentInstrument;
+          if ($paymentInstrument) {
+            $contributionParams['contribution_payment_instrument_id'] = $paymentInstrument;
           }
           
           if ($this->balans_konto_field_id) {
             $contributionParams['custom_'.$this->balans_konto_field_id] = '1571'; //SMS
           }
-          
+          CRM_Core_Error::debug_log_message(var_export($contributionParams, true));
           $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
           $charges[$id] = $contribution['id'];
           
@@ -290,7 +290,6 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
   }
   
   function convertXMLToUtf8($xml) {
-    CRM_Core_Error::debug_log_message('before xml conversion: '.$xml);
     $dom = new DOMDocument();
     $dom->loadXML($xml);
     $dom->encoding = 'utf-8';
