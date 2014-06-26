@@ -55,7 +55,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $nets_transaction = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'nets_transactions'));
       $nets_transaction_gid = $nets_transaction['id'];
       if (is_array($nets_transaction) && isset($nets_transaction['id']) && isset($nets_transaction['table_name'])) {
-        $balans_konto_field_name = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balansekonto', 'custom_group_id' => $nets_transaction_gid));
+        $balans_konto_field_name = civicrm_api3('CustomField', 'getvalue', array('return'=>'column_name', 'name' => 'balansekonto', 'custom_group_id' => $nets_transaction_gid));
         $this->balans_konto_table_name = $nets_transaction['table_name'];
         if ($balans_konto_field_name) {
           $this->balans_konto_field_name = $balans_konto_field_name;
