@@ -111,6 +111,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       }
       
       $id = 0;
+      CRM_Core_Error::debug_log_message(var_export($receivers, true));
       foreach($receivers as $receiver) {
         $id ++;
         $sendTo[$id] = $receiver;
