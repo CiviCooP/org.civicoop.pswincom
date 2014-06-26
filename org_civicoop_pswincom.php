@@ -52,7 +52,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     
     try {
       $nets_transaction_gid = civicrm_api3('CustomGroup', 'getvalue', array('return' => 'id', 'name' => 'nets_transactions'));
-      $balans_konto_field_id = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balans_konto', 'custom_group_id' => $nets_transaction_gid));
+      $balans_konto_field_id = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balansekonto', 'custom_group_id' => $nets_transaction_gid));
       if ($balans_konto_field_id) {
         $this->balans_konto_field_id = $balans_konto_field_id;
       }
@@ -151,8 +151,8 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $contributionParams['contact_id'] = $cid;
           $contributionParams['total_amount'] = $charge;
           $contributionParams['financial_type_id'] = $financial_type_id;
-          $contributionParams['receive_date'] = date('Ymd');
-          $contributionParams['thankyou_date'] = date('Ymd');
+          $contributionParams['receive_date'] = date('YmdHis');
+          $contributionParams['thankyou_date'] = date('YmdHis');
           $contributionParams['contribution_status_id'] = 1; //pending
           
           $paymentInstrument = CRM_Core_OptionGroup::getValue('payment_instrument', 'SMS');
