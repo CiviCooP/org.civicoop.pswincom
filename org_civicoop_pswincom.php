@@ -115,9 +115,12 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $id ++;
         $sendTo[$id] = $receiver;
         list($cid, $phone)  = explode("::", $receiver); //split x::yyyyyy where x = civi id and yyyyy is phone number
-        CRM_Core_Error::debug_log_message(var_export($cid, true));
-        CRM_Core_Error::debug_log_message(var_export($phone, true));
         if (empty($phone)) {
+          
+          CRM_Core_Error::debug_log_message("no phone....");
+          CRM_Core_Error::debug_log_message(var_export($cid, true));
+          CRM_Core_Error::debug_log_message(var_export($phone, true));
+          
           $phone = $receiver;
           //find cid belonging to this phone number
           $formatTo   = $this->formatPhone($this->stripPhone($phone), $like, "like"); 
