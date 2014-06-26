@@ -115,6 +115,8 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $id ++;
         $sendTo[$id] = $receiver;
         list($cid, $phone)  = explode("::", $receiver); //split x::yyyyyy where x = civi id and yyyyy is phone number
+        CRM_Core_Error::debug_log_message(var_export($cid, true));
+        CRM_Core_Error::debug_log_message(var_export($phone, true));
         if (empty($phone)) {
           $phone = $cid;
           //find cid belonging to this phone number
@@ -123,6 +125,9 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $cid = CRM_Core_DAO::singleValueQuery('SELECT contact_id FROM civicrm_phone WHERE phone LIKE "' . $escapedTo . '"');
         }
         $intPhone = $this->includeCountryCode($phone, $cid);
+        CRM_Core_Error::debug_log_message(var_export($cid, true));
+        CRM_Core_Error::debug_log_message(var_export($phone, true));
+        CRM_Core_Error::debug_log_message(var_export($intPhone, true));
                
         $xml[] = "<MSG>";
         $xml[] = "<ID>".$id."</ID>";
