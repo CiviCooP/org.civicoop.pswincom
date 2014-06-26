@@ -166,7 +166,6 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
             $contributionParams['contribution_payment_instrument_id'] = $paymentInstrument;
           }
           
-          CRM_Core_Error::debug_log_message(var_export($contributionParams, true));
           $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
           $charges[$id] = $contribution['id'];
           
