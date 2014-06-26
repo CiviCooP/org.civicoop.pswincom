@@ -52,7 +52,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     
     try {
       $nets_transaction_gid = civicrm_api3('CustomGroup', 'getvalue', array('return' => 'id', 'name' => 'nets_transactions'));
-      $balans_konto_field_id = civcirm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balans_konto', 'custom_group_id' => $nets_transaction_gid));
+      $balans_konto_field_id = civicrm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balans_konto', 'custom_group_id' => $nets_transaction_gid));
       if ($balans_konto_field_id) {
         $this->balans_konto_field_id = $balans_konto_field_id;
       }
