@@ -33,6 +33,9 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    * @var array 
    */
   protected $_providerInfo = array();
+  
+  protected $balans_konto_field_id = false;
+  
     
 
   function __construct($provider = array(), $skipAuth = TRUE) {
@@ -46,6 +49,16 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     }
     $this->_apiURL = CRM_Utils_Array::value('api_url', $provider, $this->_apiURL);
     $this->_providerInfo = $provider;
+    
+    try {
+      $nets_transaction_gid = civicrm_api3('CustomGroup', 'getvalue', array('return' => 'id', 'name' => 'nets_transactions'));
+      $balans_konto_field_id = civcirm_api3('CustomField', 'getvalue', array('return'=>'id', 'name' => 'balans_konto', 'custom_group_id' => $nets_transaction_gid));
+      if ($balans_konto_field_id) {
+        $this->balans_konto_field_id = $balans_konto_field_id;
+      }
+    } catch (Exception $e) {
+      //do nothing
+    }
   }
 
   /**
@@ -138,9 +151,30 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           $contributionParams['contact_id'] = $cid;
           $contributionParams['total_amount'] = $charge;
           $contributionParams['financial_type_id'] = $financial_type_id;
-          $contributionParams['contribution_status_id'] = 2; //pending
+          $contributionParams['receive_date'] = date('Ymd');
+          $contributionParams['thankyou_date'] = date('Ymd');
+          $contributionParams['contribution_status_id'] = 1; //pending
+          
+          $paymentInstrument = CRM_Core_OptionGroup::getValue('payment_instrument', 'SMS');
+          if ($patmentInstrument) {
+            $contributionParams['contribution_payment_instrument_id'] = $patmentInstrument;
+          }
+          
+          if ($this->balans_konto_field_id) {
+            $contributionParams['custom_'.$this->balans_konto_field_id] = '1571'; //SMS
+          }
+          
           $contribution = civicrm_api3('Contribution', 'Create', $contributionParams);
           $charges[$id] = $contribution['id'];
+          
+          //process note (sms message)
+          $noteParams = array(
+            'entity_table' => 'civicrm_contribution',
+            'note' => $message,
+            'entity_id' => $contribution['id'],
+            'contact_id' => $cid,
+          );
+          civicrm_api3('Note', 'create', $noteParams);
         }
         
         $xml[] = "</MSG>";
