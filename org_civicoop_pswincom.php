@@ -134,6 +134,13 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $shortcode = $this->_providerInfo['api_params']['shortcode'];
       }
       
+      $servicecode = false;
+      if (array_key_exists('servicecode', $header)) {
+        $servicecode = $header['servicecode'];
+      } elseif (array_key_exists('servicecode', $this->_providerInfo['api_params'])) {
+        $servicecode = $this->_providerInfo['api_params']['servicecode'];
+      }
+      
       $id = 0;
       foreach($receivers as $receiver) {
         $id ++;
@@ -162,7 +169,9 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         if ($charge !== false && $financial_type_id !== false) {
           $tariff = $charge * 100;
           $xml[] = "<TARIFF>".$tariff."</TARIFF>";
-          $xml[] = "<SERVICECODE>14003</SERVICECODE>"; //14003 donations see https://wiki.pswin.com/CPA-Goods-and-Services.ashx
+          if ($servicecode !== false) {
+            $xml[] = "<SERVICECODE>".$servicecode."</SERVICECODE>"; //14003 donations see https://wiki.pswin.com/CPA-Goods-and-Services.ashx
+          }
           
           //create pending contribution
           $contributionParams['contact_id'] = $cid;
