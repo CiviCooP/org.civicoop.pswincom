@@ -153,7 +153,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $xml[] = "</SESSION>";
       $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
       
-      CRM_Core_Error::debug_log_message("Send SMS:\r\n\r\n".$xmldocument);
+      CRM_Core_Error::debug_log_message("Send SMS:\r\n\r\n".utf8_encode($xmldocument));
       
       //open connection
       $ch = curl_init();
