@@ -91,7 +91,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       //$xml[] = "<SD>gw2xmlhttpspost</SD>";
       $xml[] = "<MSGLST>";
       
-      $receivers = explode(",", $header['to']);
+      $receivers = explode(",", $header['To']);
       $sendTo = array();
       
       //determine messsage chariging
