@@ -162,6 +162,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         if ($charge !== false && $financial_type_id !== false) {
           $tariff = $charge * 100;
           $xml[] = "<TARIFF>".$tariff."</TARIFF>";
+          $xml[] = "<SERVICECODE>14003</SERVICECODE>"; //14003 donations see https://wiki.pswin.com/CPA-Goods-and-Services.ashx
           
           //create pending contribution
           $contributionParams['contact_id'] = $cid;
