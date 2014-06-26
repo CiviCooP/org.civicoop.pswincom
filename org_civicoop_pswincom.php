@@ -290,7 +290,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
   }
   
   function convertXMLToUtf8($xml) {
-    CRM_Core_Error::debug_log_message('before xml conversion: '.xml);
+    CRM_Core_Error::debug_log_message('before xml conversion: '.$xml);
     $dom = new DOMDocument();
     $dom->loadXML($xml);
     $dom->encoding = 'utf-8';
