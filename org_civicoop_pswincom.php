@@ -127,6 +127,13 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $financial_type_id = $this->_providerInfo['api_params']['financial_type_id'];
       }
       
+      $shortcode = false;
+      if (array_key_exists('shortcode', $header)) {
+        $shortcode = $header['shortcode'];
+      } elseif (array_key_exists('shortcode', $this->_providerInfo['api_params'])) {
+        $shortcode = $this->_providerInfo['api_params']['shortcode'];
+      }
+      
       $id = 0;
       foreach($receivers as $receiver) {
         $id ++;
@@ -147,6 +154,9 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $xml[] = "<RCV>".$intPhone."</RCV>";
         if (array_key_exists('from', $this->_providerInfo['api_params'])) {
           $xml[] = "<SND>".$this->_providerInfo['api_params']['from']."</SND>";
+        }
+        if ($shortcode !== false) {
+          $xml[] = "<SHORTCODE>".$shortcode."</SHORTCODE>";
         }
         
         if ($charge !== false && $financial_type_id !== false) {
