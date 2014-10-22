@@ -2,6 +2,28 @@
 
 require_once 'pswincom.civix.php';
 
+const PSWINCON_MAX_SMS_LENGT = 804;
+
+function pswincom_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Contact_Form_Task_SMS') {
+    $form->assign('max_sms_length',PSWINCON_MAX_SMS_LENGT);
+  }
+}
+
+function pswincom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
+  if ($formName == 'CRM_Contact_Form_Task_SMS') {
+    unset($errors['text_message']);
+    $form->setElementError('text_message', NULL);
+    if (CRM_Utils_Array::value('text_message', $fields)) {
+        $messageCheck = CRM_Utils_Array::value('text_message', $fields);
+        $messageCheck = str_replace("\r\n", "\n", $messageCheck);
+        if ($messageCheck && (strlen($messageCheck) > PSWINCON_MAX_SMS_LENGT)) {
+          $errors['text_message'] = ts("You can configure the SMS message body up to %1 characters", array(1 => PSWINCON_MAX_SMS_LENGT));
+        }
+      }
+  }
+}
+
 /**
  * Implementation of hook_civicrm_config
  *
