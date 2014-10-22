@@ -5,13 +5,14 @@ require_once 'pswincom.civix.php';
 const PSWINCON_MAX_SMS_LENGT = 804;
 
 function pswincom_civicrm_buildForm($formName, &$form) {
-  if ($formName == 'CRM_Contact_Form_Task_SMS') {
+  if ($formName == 'CRM_Contact_Form_Task_SMS' || $formName == 'CRM_Smsautoreply_Form_Autoreplies') {
     $form->assign('max_sms_length',PSWINCON_MAX_SMS_LENGT);
   }
+  
 }
 
 function pswincom_civicrm_validateForm( $formName, &$fields, &$files, &$form, &$errors ) {
-  if ($formName == 'CRM_Contact_Form_Task_SMS') {
+  if ($formName == 'CRM_Contact_Form_Task_SMS' || $formName == 'CRM_Smsautoreply_Form_Autoreplies') {
     unset($errors['text_message']);
     $form->setElementError('text_message', NULL);
     if (CRM_Utils_Array::value('text_message', $fields)) {
