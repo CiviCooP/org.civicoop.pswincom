@@ -43,7 +43,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     $apiTypeId = CRM_Utils_Array::value('api_type', $provider, false);
     if ($apiTypeId) {
       $api_group_id = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'sms_api_type', 'return' => 'id'));
-      $val = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => $api_group_id, 'value' => $apiTypeId, 'return' => 'name'));
+      $val = civicrm_api3('OptionValue', 'getvalue', array('option_group_id' => $api_group_id, 'name' => $apiTypeId, 'return' => 'name'));
       if ($val) {
         $this->_apiType = $val;
       }
