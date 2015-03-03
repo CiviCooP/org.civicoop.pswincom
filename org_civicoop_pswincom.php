@@ -296,7 +296,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         $from = substr($from, 2);
       }
       
-      $body = (string) $msg->TEXT;
+      $body = htmlentities((string) $msg->TEXT);
       $to = (string) $msg->RCV;
     
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
