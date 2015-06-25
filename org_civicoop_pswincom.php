@@ -305,11 +305,15 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $to = (string) $msg->RCV;
     
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
+      ob_start();
       try {
         parent::processInbound($from, $body, $to);
       } catch (Exception $e) {
         CRM_Core_Error::debug_log_message('Error in processing message: '.$e->getMessage()."\r\n\r\n".$e->getTraceAsString());
       }
+      $output_buffer = ob_get_contents();
+      CRM_Core_Error::debug_log_message($output_buffer);
+      ob_end_clean();
       
       $xml[] = "<MSG>";
       $xml[] = "<ID>".(string) $msg->ID . "</ID>";
