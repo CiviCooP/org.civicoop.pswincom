@@ -198,7 +198,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
           );
           civicrm_api3('Note', 'create', $noteParams);
           
-          CRM_Core_DAO::executeQuery("INSERT INTO `".$this->balans_konto_table_name."` (`entity_id`, `".$this->balans_konto_field_name."`) VALUES (%1, %2);", array(
+          CRM_Core_DAO::executeQuery("INSERT INTO `".$this->balans_konto_table_name."` (`entity_id`, `".$this->balans_konto_field_name."`) VALUES (%1, %2) ON DUPLICATE KEY UPDATE `".$this->balans_konto_field_name."` = %2;", array(
             1 => array($contribution['id'], 'Positive'),
             2 => array('1571', 'String') //1571 is sms payment
           ));
