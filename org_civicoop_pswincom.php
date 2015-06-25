@@ -245,25 +245,30 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         CRM_Core_Error::debug_log_message('Error with sending SMS: '.$error);
         return false;
       }
-      
-      $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
-      foreach($xmlResponse->MSGLST->children() as $msg) {
-        if ( (string) $msg->STATUS != 'OK') {
-          //error for contact
-          $receiver = $sendTo[(string) $msg->ID];
-          list($cid, $phone)  = explode("::", $receiver);
-          $to = CRM_Contact_BAO_Contact::displayName($cid) . ' &lt;'.$phone.'&gt;';
-          $session->setStatus(ts("Failed to send message to '%1' because '%2'", array( 1 => $to, 2 => (string) $msg->INFO)));
+      try {
+        $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
+        foreach($xmlResponse->MSGLST->children() as $msg) {
+          if ( (string) $msg->STATUS != 'OK') {
+            //error for contact
+            $receiver = $sendTo[(string) $msg->ID];
+            list($cid, $phone)  = explode("::", $receiver);
+            $to = CRM_Contact_BAO_Contact::displayName($cid) . ' &lt;'.$phone.'&gt;';
+            $session->setStatus(ts("Failed to send message to '%1' because '%2'", array( 1 => $to, 2 => (string) $msg->INFO)));
           
-          //remove the contribution from the system
-          if (isset($charges[(string) $msg->ID])) {
-            $updateContrib['id'] = $charges[(string) $msg->ID];
-            $updateContrib['contribution_status_id'] = 3; //cancled
-            civicrm_api3('Contribution', 'create', $updateContrib);
+            //remove the contribution from the system
+            if (isset($charges[(string) $msg->ID])) {
+              $updateContrib['id'] = $charges[(string) $msg->ID];
+              $updateContrib['contribution_status_id'] = 3; //cancled
+              civicrm_api3('Contribution', 'create', $updateContrib);
+            }
           }
         }
+        return true;
+      } catch (Exception $e) {
+        $session->setStatus(ts('Sending SMS Failed: received invalid response from pswincom', $response), '', 'error');
+	CRM_Core_Error::debug_log_message('Invalid response: '.var_export($error, true).': '.var_export($response, true));
+	throw new Exception('Failed to send SMS. Received an invalid response from the pswincom server. The response is '.var_export($response, true));
       }
-      return true;
     }
     return false;
   }
