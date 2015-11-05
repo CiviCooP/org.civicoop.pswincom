@@ -145,13 +145,16 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       foreach($receivers as $receiver) {
         $id ++;
         $sendTo[$id] = $receiver;
-        list($cid, $phone)  = explode("::", $receiver); //split x::yyyyyy where x = civi id and yyyyy is phone number
-        if (empty($phone)) {
+        $splitted_receiver  = explode("::", $receiver); //split x::yyyyyy where x = civi id and yyyyy is phone number
+        $cid = $splitted_receiver[0];
+        if (empty($splitted_receiver[1])) {
           $phone = $cid;
           //find cid belonging to this phone number
           $formatTo   = $this->formatPhone($this->stripPhone($phone), $like, "like"); 
           $escapedTo  = CRM_Utils_Type::escape($formatTo, 'String');
           $cid = CRM_Core_DAO::singleValueQuery('SELECT contact_id FROM civicrm_phone WHERE phone LIKE "' . $escapedTo . '"');
+        } else {
+            $phone = $splitted_receiver[1];
         }
         $intPhone = $this->includeCountryCode($phone, $cid);
                
@@ -247,6 +250,11 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       }
       try {
         $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
+        if (empty($xmlResponse->MSGLST)) {
+            $session->setStatus(ts('Sending SMS Failed: %1', html_entities($response)), '', 'error');
+            CRM_Core_Error::debug_log_message('Error with sending SMS: '.$response);
+            return false;
+        }
         foreach($xmlResponse->MSGLST->children() as $msg) {
           if ( (string) $msg->STATUS != 'OK') {
             //error for contact
