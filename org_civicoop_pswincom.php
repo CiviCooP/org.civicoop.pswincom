@@ -251,7 +251,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       try {
         $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
         if (empty($xmlResponse->MSGLST)) {
-            $session->setStatus(ts('Sending SMS Failed: %1', html_entities($response)), '', 'error');
+            $session->setStatus(ts('Sending SMS Failed: %1', htmlentities($response)), '', 'error');
             CRM_Core_Error::debug_log_message('Error with sending SMS: '.$response);
             return false;
         }
