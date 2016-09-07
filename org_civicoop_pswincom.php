@@ -95,7 +95,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    * @access public
    */
   function send($recipients, $header, $message, $dncID = NULL) { 
-    CRM_Core_Error::debug_log_message("Send SMS with pswin");
+    CRM_Core_Error::debug_log_message("Send SMS with pswin", false, 'SMS');
     
     $session = CRM_Core_Session::singleton();    
     if ($this->_apiType == 'xml') {
@@ -215,7 +215,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $xml[] = "</SESSION>";
       $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
       
-      CRM_Core_Error::debug_log_message("Send SMS:\r\n\r\n".utf8_encode($xmldocument));
+      CRM_Core_Error::debug_log_message("Send SMS:\r\n\r\n".utf8_encode($xmldocument), false, 'SMS');
       
       //open connection
       $ch = curl_init();
@@ -245,14 +245,14 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       
       if ($error !== false) {
         $session->setStatus(ts('Sending SMS Failed: %1', $error), '', 'error');
-        CRM_Core_Error::debug_log_message('Error with sending SMS: '.$error);
+        CRM_Core_Error::debug_log_message('Error with sending SMS: '.$error, false, 'SMS');
         return false;
       }
       try {
         $xmlResponse = new SimpleXMLElement($this->convertXMLToUtf8(trim($response)));
         if (empty($xmlResponse->MSGLST)) {
             $session->setStatus(ts('Sending SMS Failed: %1', htmlentities($response)), '', 'error');
-            CRM_Core_Error::debug_log_message('Error with sending SMS: '.$response);
+            CRM_Core_Error::debug_log_message('Error with sending SMS: '.$response, false, 'SMS');
             return false;
         }
         foreach($xmlResponse->MSGLST->children() as $msg) {
@@ -274,7 +274,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
         return true;
       } catch (Exception $e) {
         $session->setStatus(ts('Sending SMS Failed: received invalid response from pswincom', $response), '', 'error');
-	CRM_Core_Error::debug_log_message('Invalid response: '.var_export($error, true).': '.var_export($response, true));
+	CRM_Core_Error::debug_log_message('Invalid response: '.var_export($error, true).': '.var_export($response, true), false, 'SMS');
 	throw new Exception('Failed to send SMS. Received an invalid response from the pswincom server. The response is '.var_export($response, true));
       }
     }
@@ -299,7 +299,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     
     $content = $this->convertXMLToUtf8(file_get_contents('php://input', 'r'));
     
-    CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content);
+    CRM_Core_Error::debug_log_message('Received SMS with contents: '.$content, false, 'SMS');
     
     $xmlRequest = new SimpleXMLElement(trim($content));   
     foreach($xmlRequest->children() as $msg) {
@@ -312,15 +312,15 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       $body = htmlentities((string) $msg->TEXT);
       $to = (string) $msg->RCV;
     
-      CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body);
+      CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body, false, 'SMS');
       ob_start();
       try {
         parent::processInbound($from, $body, $to);
       } catch (Exception $e) {
-        CRM_Core_Error::debug_log_message('Error in processing message: '.$e->getMessage()."\r\n\r\n".$e->getTraceAsString());
+        CRM_Core_Error::debug_log_message('Error in processing message: '.$e->getMessage()."\r\n\r\n".$e->getTraceAsString(), false, 'SMS');
       }
       $output_buffer = ob_get_contents();
-      CRM_Core_Error::debug_log_message($output_buffer);
+      CRM_Core_Error::debug_log_message($output_buffer, false, 'SMS');
       ob_end_clean();
       
       $xml[] = "<MSG>";
@@ -331,6 +331,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
     
     $xml[] = "</MSGLST>";
     $xmldocument = utf8_decode(join("\r\n", $xml) . "\r\n\r\n");
+    CRM_Core_Error::debug_log_message("Response to PSWinCom: \r\n".$xmldocument, false, 'SMS');
     echo $xmldocument;
     
     CRM_Utils_System::civiExit();
