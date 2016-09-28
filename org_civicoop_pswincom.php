@@ -160,7 +160,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
                
         $xml[] = "<MSG>";
         $xml[] = "<ID>".$id."</ID>";
-        $xml[] = "<TEXT>".$message."</TEXT>";
+        $xml[] = "<TEXT><![CDATA[".$message."]]></TEXT>";
         $xml[] = "<RCV>".$intPhone."</RCV>";
         if (array_key_exists('from', $this->_providerInfo['api_params'])) {
           $xml[] = "<SND>".$this->_providerInfo['api_params']['from']."</SND>";
