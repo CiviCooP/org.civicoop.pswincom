@@ -33,13 +33,16 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
    * @var array 
    */
   protected $_providerInfo = array();
+
+  protected $providerID = false;
   
   protected $balans_konto_table_name = false;
   protected $balans_konto_field_name = false;
   
     
 
-  function __construct($provider = array(), $skipAuth = TRUE) {
+  function __construct($provider = array(), $providerID=false, $skipAuth = TRUE) {
+    $this->providerID = $providerID;
     $apiTypeId = CRM_Utils_Array::value('api_type', $provider, false);
     if ($apiTypeId) {
       $api_group_id = civicrm_api3('OptionGroup', 'getvalue', array('name' => 'sms_api_type', 'return' => 'id'));
@@ -84,7 +87,7 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       if ($providerID) {
         $provider = CRM_SMS_BAO_Provider::getProviderInfo($providerID);
       }
-      self::$_singleton[$cacheKey] = new org_civicoop_pswincom($provider, $skipAuth);
+      self::$_singleton[$cacheKey] = new org_civicoop_pswincom($provider, $providerID, $skipAuth);
     }
     return self::$_singleton[$cacheKey];
   }
@@ -315,7 +318,13 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body, false, 'SMS');
       ob_start();
       try {
-        parent::processInbound($from, $body, $to);
+        $sql = "INSERT INTO `civicrm_pswincom_inbound` (`from`, `to`, `body`, `date`, `provider_id`) VALUES (%1, %2, %3, NOW(), %4);";
+        $sqlParams[1] = array($from, 'String');
+        $sqlParams[2] = array($to, 'String');
+        $sqlParams[3] = array($body, 'String');
+        $sqlParams[4] = array($this->providerID, 'Integer');
+        CRM_Core_DAO::executeQuery($sql, $sqlParams);
+        //parent::processInbound($from, $body, $to);
       } catch (Exception $e) {
         CRM_Core_Error::debug_log_message('Error in processing message: '.$e->getMessage()."\r\n\r\n".$e->getTraceAsString(), false, 'SMS');
       }

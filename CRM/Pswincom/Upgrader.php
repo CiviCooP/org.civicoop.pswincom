@@ -17,6 +17,13 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
       'version' => 3,
     );
     civicrm_api3('OptionValue', 'create', $params);
+
+    $this->executeSqlFile('sql/install.sql');
+  }
+
+  public function upgrade_1001() {
+    $this->executeSqlFile('sql/install.sql');
+    return true;
   }
 
   public function uninstall() {
