@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS civicrm_pswincom_inbound (
   `body` TEXT NULL,
   `date` DATETIME NULL,
   `provider_id` INT NOT NULL,
+  `reference` varchar(128) NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8

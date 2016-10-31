@@ -314,15 +314,28 @@ class org_civicoop_pswincom extends CRM_SMS_Provider {
       
       $body = htmlentities((string) $msg->TEXT);
       $to = (string) $msg->RCV;
+
+      $date = new DateTime();
+      $reference = '';
+      $timestamps = $msg->xpath('//DATA[@KEY="TIMESTAMP"]');
+      $references = $msg->xpath('//DATA[@KEY="REFERENCE"]');
+      if (count($timestamps)) {
+        $date = new DateTime(reset($timestamps));
+      }
+      if (count($references)) {
+        $reference = reset($references);
+      }
     
       CRM_Core_Error::debug_log_message('Process message from '.$from.' to '.$to.' with body '.$body, false, 'SMS');
       ob_start();
       try {
-        $sql = "INSERT INTO `civicrm_pswincom_inbound` (`from`, `to`, `body`, `date`, `provider_id`) VALUES (%1, %2, %3, NOW(), %4);";
+        $sql = "INSERT INTO `civicrm_pswincom_inbound` (`from`, `to`, `body`, `date`, `provider_id`, `reference`) VALUES (%1, %2, %3, %4, %5, %6);";
         $sqlParams[1] = array($from, 'String');
         $sqlParams[2] = array($to, 'String');
         $sqlParams[3] = array($body, 'String');
-        $sqlParams[4] = array($this->providerID, 'Integer');
+        $sqlParams[4] = array($date->format('Y-m-d H:i:s'), 'String');
+        $sqlParams[5] = array($this->providerID, 'Integer');
+        $sqlParams[6] = array($reference, 'String');
         CRM_Core_DAO::executeQuery($sql, $sqlParams);
         //parent::processInbound($from, $body, $to);
       } catch (Exception $e) {

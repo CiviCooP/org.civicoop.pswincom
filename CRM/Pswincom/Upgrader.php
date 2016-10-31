@@ -26,6 +26,11 @@ class CRM_Pswincom_Upgrader extends CRM_Pswincom_Upgrader_Base {
     return true;
   }
 
+  public function upgrade_1002() {
+    CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_pswincom_inbound ADD `reference` varchar(128) NOT NULL;");
+    return true;
+  }
+
   public function uninstall() {
     $optionID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', 'PSWinCom', 'id', 'name');
     if ($optionID) {
